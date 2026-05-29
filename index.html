@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio | Cinematic Content Editor</title>
+    <style>
+        /* ==========================================================================
+           1. GRUNDLÄGGANDE STIL & RESETS
+           ========================================================================== */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            background-color: #030508;
+            color: #ffffff;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        section {
+            padding: 80px 0;
+            position: relative;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        /* ==========================================================================
+           2. SEKTIONSRUBRIKER & ANPASSNINGAR
+           ========================================================================== */
+        h2 {
+            font-size: 2.4rem;
+            font-weight: 300;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 40px;
+            padding-left: 5%;
+            position: relative;
+        }
+
+        /* Gemensam stil för tvådelade rubriker */
+        .doc-title {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+        }
+        .doc-title .white-part {
+            color: #ffffff;
+            font-weight: 300;
+        }
+
+        /* --- Sektion 1: Silence (Vit-Blå-Vit) --- */
+        .doc-title .blue-part {
+            color: #00d2ff;
+            font-weight: 700;
+            text-shadow: 0 0 15px rgba(0, 210, 255, 0.6), 0 0 30px rgba(0, 210, 255, 0.3);
+        }
+        .neon-blue h2::before {
+            content: ''; position: absolute; left: 3.5%; top: 15%; height: 70%; width: 5px;
+            background-color: #00d2ff; box-shadow: 0 0 15px #00d2ff;
+        }
+
+        /* --- Sektion 2: Long form content (Vit-Röd) --- */
+        .doc-title .red-part {
+            color: #ff3333;
+            font-weight: 700;
+            text-shadow: 0 0 15px rgba(255, 51, 51, 0.6), 0 0 30px rgba(255, 51, 51, 0.3);
+        }
+        .neon-red h2::before {
+            content: ''; position: absolute; left: 3.5%; top: 15%; height: 70%; width: 5px;
+            background-color: #ff3333; box-shadow: 0 0 15px #ff3333;
+        }
+
+        /* --- Sektion 3: Short form content (Neon Gul) --- */
+        .neon-yellow h2 span {
+            color: #ffd700;
+            font-weight: 700;
+            text-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
+        }
+        .neon-yellow h2::before {
+            content: ''; position: absolute; left: 3.5%; top: 15%; height: 70%; width: 5px;
+            background-color: #ffd700; box-shadow: 0 0 15px #ffd700;
+        }
+
+        /* ==========================================================================
+           3. HERO INTRO
+           ========================================================================== */
+        .hero {
+            position: relative;
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .hero-video {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            object-fit: cover; z-index: 1; opacity: 0.45;
+        }
+        .hero-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(0deg, #030508 0%, transparent 70%);
+            z-index: 1;
+        }
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            padding: 0 20px;
+        }
+        .hero-content h1 {
+            font-size: 4.5rem;
+            letter-spacing: 8px;
+            text-transform: uppercase;
+            margin-bottom: 15px;
+            text-shadow: 0px 4px 30px rgba(0,0,0,0.9);
+        }
+        .hero-content p {
+            font-size: 1.3rem;
+            color: #8a99ad;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+        }
+
+        /* ==========================================================================
+           4. DOKUMENTÄR-STRUKTUR (16:9)
+           ========================================================================== */
+        .doc-section {
+            background-color: #05080c;
+        }
+        .doc-container {
+            width: 90%;
+            max-width: 1000px;
+            margin: 0 auto;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 15px 45px rgba(0,0,0,0.8), 0 0 30px rgba(0, 210, 255, 0.15);
+            border: 2px solid rgba(0, 210, 255, 0.3);
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+        }
+        .doc-container iframe {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%; border: none;
+        }
+
+        /* ==========================================================================
+           5. KARUSELL-STRUKTUR MED NAVIGERINGS-PILAR
+           ========================================================================== */
+        .carousel-wrapper {
+            position: relative;
+            padding: 0 5%;
+            display: flex;
+            align-items: center;
+        }
+        .carousel-container {
+            display: flex;
+            overflow-x: auto;
+            scroll-behavior: smooth;
+            padding: 25px 0;
+            gap: 25px;
+            width: 100%;
+            scrollbar-width: none;
+        }
+        .carousel-container::-webkit-scrollbar {
+            display: none;
+        }
+
+        .nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 55px;
+            height: 55px;
+            background: rgba(13, 20, 30, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+            font-size: 1.8rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.6);
+        }
+        .nav-btn:hover {
+            background: #ffffff;
+            color: #000000;
+            scale: 1.1;
+        }
+        .prev-btn { left: 1.5%; }
+        .next-btn { right: 1.5%; }
+
+        /* ==========================================================================
+           6. PRESENTATIONSVIDEOR (TV-RAMAR 16:9)
+           ========================================================================== */
+        .tv-card-wrapper {
+            flex: 0 0 480px;
+            transition: transform 0.4s ease;
+        }
+        .tv-card-wrapper:hover {
+            transform: translateY(-8px);
+        }
+        .tv-frame {
+            background: #111622;
+            padding: 16px 16px 26px 16px;
+            border-radius: 14px;
+            border: 2px solid #222b3c;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.8);
+            position: relative;
+        }
+        .tv-frame::after {
+            content: ''; position: absolute; bottom: 7px; left: 50%; transform: translateX(-50%);
+            width: 60px; height: 4px; background: rgba(255,255,255,0.2); border-radius: 2px;
+        }
+        .tv-screen {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            border-radius: 6px;
+            overflow: hidden;
+            background: #000;
+        }
+        .tv-screen iframe {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%; border: none;
+        }
+        .tv-title {
+            margin-top: 14px; font-size: 1.1rem; font-weight: 400; letter-spacing: 1px; color: #eee; text-align: center;
+        }
+
+        /* ==========================================================================
+           7. SHORT FORM KORT (9:16 OCH NYA BILDTEMAN)
+           ========================================================================== */
+        .short-card {
+            flex: 0 0 260px;
+            height: 440px;
+            background-size: cover;
+            background-position: center;
+            border-radius: 14px;
+            overflow: hidden;
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            cursor: pointer;
+            transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), border-color 0.4s, box-shadow 0.4s;
+        }
+        .short-card::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(180deg, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.85) 100%);
+            z-index: 1;
+        }
+        .short-card:hover {
+            transform: translateY(-10px);
+            border-color: #ffd700;
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.3);
+        }
+
+        .card-info {
+            position: absolute;
+            bottom: 0; left: 0; width: 100%; padding: 25px 20px;
+            z-index: 2;
+        }
+        .card-info p {
+            font-size: 0.75rem; color: #ffd700; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 4px;
+            font-weight: 700;
+            text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+        }
+        .card-info h3 {
+            font-size: 1.1rem; font-weight: 500; line-height: 1.3; color: #fff;
+        }
+
+        .short-play {
+            position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%);
+            width: 50px; height: 50px; background: rgba(255, 215, 0, 0.9); border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s; z-index: 2;
+            box-shadow: 0 0 15px #ffd700;
+        }
+        .short-card:hover .short-play { opacity: 1; }
+
+        /* ==========================================================================
+           8. INSTAGRAM POPUP MOCKUP (LIGHTBOX)
+           ========================================================================== */
+        .video-modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(2,4,7,0.96);
+            z-index: 9999; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.4s;
+        }
+        .video-modal.active { opacity: 1; pointer-events: auto; }
+        .modal-content {
+            width: 90%; max-width: 440px; height: 80vh; max-height: 760px; background: #000; border-radius: 16px; overflow: hidden; position: relative;
+            box-shadow: 0 0 40px rgba(255, 215, 0, 0.3); border: 1px solid rgba(255, 215, 0, 0.25);
+        }
+        .modal-content iframe { width: 100%; height: 100%; border: none; }
+        .close-modal { position: absolute; top: -40px; right: 0; color: #fff; background: none; border: none; font-size: 1.4rem; cursor: pointer; letter-spacing: 1px; }
+        .close-modal:hover { color: #ffd700; }
+
+        /* ==========================================================================
+           9. STRUKTURERAD MOBILANPASSNING (RESPONSIV DESIGN)
+           ========================================================================== */
+        @media (max-width: 1024px) {
+            .tv-card-wrapper { flex: 0 0 400px; }
+        }
+
+        @media (max-width: 768px) {
+            section { padding: 50px 0; }
+            
+            /* Nedskalning av texter på mobilen */
+            .hero-content h1 { font-size: 2.5rem; letter-spacing: 4px; }
+            .hero-content p { font-size: 1rem; letter-spacing: 3px; }
+            
+            h2 { font-size: 1.5rem; letter-spacing: 2px; padding-left: 8%; margin-bottom: 25px; }
+            .neon-blue h2::before, .neon-red h2::before, .neon-yellow h2::before { left: 5%; }
+
+            /* Titlarna bryts snyggt */
+            .doc-title { font-size: 1.4rem; gap: 6px; }
+
+            /* Skala ner karusellerna för touch-skärmar */
+            .tv-card-wrapper { flex: 0 0 310px; }
+            .tv-frame { padding: 10px 10px 18px 10px; }
+            .tv-title { font-size: 0.95rem; margin-top: 8px; }
+
+            .short-card { flex: 0 0 190px; height: 330px; border-radius: 10px; }
+            .card-info { padding: 15px 12px; }
+            .card-info h3 { font-size: 0.9rem; }
+            
+            .nav-btn { width: 40px; height: 40px; font-size: 1.3rem; }
+            .prev-btn { left: 1%; }
+            .next-btn { right: 1%; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="hero">
+        <div class="hero-overlay"></div>
+        <video class="hero-video" autoplay loop muted playsinline>
+            <source src="https://assets.mixkit.co/videos/preview/mixkit-cinematic-burning-fire-in-the-snow-42823-large.mp4" type="video/mp4">
+        </video>
+        <div class="hero-content">
+            <h1>Portfolio</h1>
+            <p>Content Editor & Director</p>
+        </div>
+    </div>
+
+    <section class="doc-section neon-blue">
+        <h2 class="doc-title">
+            <span class="white-part">Dokumentär</span>
+            <span class="blue-part">Silence</span>
+        </h2>
+        <div class="doc-container">
+            <iframe src="https://drive.google.com/file/d/1NnTpRlwpw48ju7MexVJOFuknEMFh1qrJ/preview" allow="autoplay; fullscreen" allowfullscreen></iframe>
+        </div>
+    </section>
+
+    <section class="neon-red">
+        <h2 class="doc-title">
+            <span class="white-part">Long form</span>
+            <span class="red-part">content</span>
+        </h2>
+        
+        <div class="carousel-wrapper">
+            <button class="nav-btn prev-btn" onclick="scrollCarousel('longCarousel', -450)">‹</button>
+            
+            <div class="carousel-container" id="longCarousel">
+                
+                <div class="tv-card-wrapper">
+                    <div class="tv-frame">
+                        <div class="tv-screen">
+                            <iframe src="https://player.vimeo.com/video/493713869?title=0&byline=0&portrait=0&badge=0" frameborder="0" allowfullscreen></iframe>
+                        </div>
+                    </div>
+                    <div class="tv-title">Maria - Företagspresentation</div>
+                </div>
+
+                <div class="tv-card-wrapper">
+                    <div class="tv-frame">
+                        <div class="tv-screen">
+                            <iframe src="https://player.vimeo.com/video/487813967?title=0&byline=0&portrait=0&badge=0" frameborder="0" allowfullscreen></iframe>
+                        </div>
+                    </div>
+                    <div class="tv-title">Lotta - Medarbetarprofil</div>
+                </div>
+
+                <div class="tv-card-wrapper">
+                    <div class="tv-frame">
+                        <div class="tv-screen">
+                            <iframe src="https://player.vimeo.com/video/444006969?title=0&byline=0&portrait=0&badge=0" frameborder="0" allowfullscreen></iframe>
+                        </div>
+                    </div>
+                    <div class="tv-title">Företagsintervju - Del II</div>
+                </div>
+
+            </div>
+
+            <button class="nav-btn next-btn" onclick="scrollCarousel('longCarousel', 450)">›</button>
+        </div>
+    </section>
+
+    <section class="neon-yellow">
+        <h2>Short form <span>content</span></h2>
+        <div class="carousel-wrapper">
+            <button class="nav-btn prev-btn" onclick="scrollCarousel('shortCarousel', -280)">‹</button>
+            
+            <div class="carousel-container" id="shortCarousel">
+                
+                <!-- Cissi och Selma 1 -->
+                <div class="short-card" style="background-image: url('https://instagram.farn2-2.fna.fbcdn.net/v/t51.2885-15/434604553_1143890350302302_7402633036660144675_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=18de74&_nc_ohc=J6L_b_6HCHoQ7kNvgEtm9aE&_nc_oc=AdhOasjR0S_L4SEx5YF9DoxfX_6LOnuA_g2pfe8wK_HwXj3DIsXg-3G6F_M6Qe4S1Wk&_nc_zt=23&_nc_ht=instagram.farn2-2.fna.fbcdn.net&edm=ANo9K4cEAAAA&_nc_gid=A_045S04oM1XJ5M2s-v3n8N&oh=00_AYDS5wTq8aO7TxlZitYWh2p8Mv5GvS6n-z-WpYhTfCHlzw&oe=6668FA1A');" onclick="openVideo('https://www.instagram.com/reel/DNipjwLKr1W/embed')">
+                    <div class="short-play"><svg width="16" height="16" viewBox="0 0 24 24" fill="black"><path d="M8 5v14l11-7z"/></svg></div>
+                    <div class="card-info">
+                        <p>Cissi och Selma</p>
+                        <h3>Berättelsen om Cissi och Selma</h3>
+                    </div>
+                </div>
+
+                <!-- Cissi och Selma 2 -->
+                <div class="short-card" style="background-image: url('https://instagram.farn2-1.fna.fbcdn.net/v/t51.2885-15/327771489_739213560944061_8783437166133177651_n.jpg?_nc_cat=104&ccb=1-7&_nc_sid=18de74&_nc_ohc=f6_h6Mv-fEwQ7kNvgEwWn8B&_nc_oc=Adhm8C_Z43mSNo24VbN9D2mZ5FvXOn7-TfK7FwPzYn_p4D0_7W_3oW5u9Nn_P2S_N9k&_nc_zt=23&_nc_ht=instagram.farn2-1.fna.fbcdn.net&edm=ANo9K4cEAAAA&_nc_gid=A_045S04oM1XJ5M2s-v3n8N&oh=00_AYACwM_QhN_5bU8pS1T3ZgG_4L_8f3R2C9fP5F3P_CHmzv&oe=6668F33C');" onclick="openVideo('https://www.instagram.com/reel/DKo-kjPKwc9/embed')">
+                    <div class="short-play"><svg width="16" height="16" viewBox="0 0 24 24" fill="black"><path d="M8 5v14l11-7z"/></svg></div>
+                    <div class="card-info">
+                        <p>Cissi och Selma</p>
+                        <h3>Fashion Transformation I</h3>
+                    </div>
+                </div>
+
+                <!-- Cissi och Selma 3 -->
+                <div class="short-card" style="background-image: url('https://instagram.farn2-1.fna.fbcdn.net/v/t51.2885-15/327654112_1253748281881476_6541234710921473651_n.jpg?_nc_cat=102&ccb=1-7&_nc_sid=18de74&_nc_ohc=t7_g6Mv-fEwQ7kNvgExWn8C&_nc_oc=Adhk8C_Z43mSNo24VbN9D2mZ5FvXOn7-TfK7FwPzYn_p4D0_7W_3oW5u9Nn_P2S_N9k&_nc_zt=23&_nc_ht=instagram.farn2-1.fna.fbcdn.net&edm=ANo9K4cEAAAA&_nc_gid=A_045S04oM1XJ5M2s-v3n8N&oh=00_AYACwM_QhN_5bU8pS1T3ZgG_4L_8f3R2C9fP5F3P_CHmzv&oe=6668F33C');" onclick="openVideo('https://www.instagram.com/reel/CoHky6gqe1N/embed')">
+                    <div class="short-play"><svg width="16" height="16" viewBox="0 0 24 24" fill="black"><path d="M8 5v14l11-7z"/></svg></div>
+                    <div class="card-info">
+                        <p>Cissi och Selma</p>
+                        <h3>Fashion Transformation II</h3>
+                    </div>
+                </div>
+
+                <!-- Cissi och Selma 4 -->
+                <div class="short-card" style="background-image: url('https://instagram.farn2-2.fna.fbcdn.net/v/t51.2885-15/456382104_1189230155702311_8231940173660144675_n.jpg?_nc_cat=108&ccb=1-7&_nc_sid=18de74&_nc_ohc=K6L_b_6HCHoQ7kNvgEtm9aE&_nc_oc=AdhOasjR0S_L4SEx5YF9DoxfX_6LOnuA_g2pfe8wK_HwXj3DIsXg-3G6F_M6Qe4S1Wk&_nc_zt=23&_nc_ht=instagram.farn2-2.fna.fbcdn.net&edm=ANo9K4cEAAAA&_nc_gid=A_045S04oM1XJ5M2s-v3n8N&oh=00_AYDS5wTq8aO7TxlZitYWh2p8Mv5GvS6n-z-WpYhTfCHlzw&oe=6668FA1A');" onclick="openVideo('https://www.instagram.com/reel/C-iXZ2atPI8/embed')">
+                    <div class="short-play"><svg width="16" height="16" viewBox="0 0 24 24" fill="black"><path d="M8 5v14l11-7z"/></svg></div>
+                    <div class="card-info">
+                        <p>Cissi och Selma</p>
+                        <h3>Fashion Transformation III</h3>
+                    </div>
+                </div>
+
+                <!-- Cissi och Selma 5 -->
+                <div class="short-card" style="background-image: url('https://instagram.farn2-1.fna.fbcdn.net/v/t51.2885-15/274112489_739213560944061_8783437166133177651_n.jpg?_nc_cat=104&ccb=1-7&_nc_sid=18de74&_nc_ohc=f6_h6Mv-fEwQ7kNvgEwWn8B&_nc_oc=Adhm8C_Z43mSNo24VbN9D2mZ5FvXOn7-TfK7FwPzYn_p4D0_7W_3oW5u9Nn_P2S_N9k&_nc_zt=23&_nc_ht=instagram.farn2-1.fna.fbcdn.net&edm=ANo9K4cEAAAA&_nc_gid=A_045S04oM1XJ5M2s-v3n8N&oh=00_AYACwM_QhN_5bU8pS1T3ZgG_4L_8f3R2C9fP5F3P_CHmzv&oe=6668F33C');" onclick="openVideo('https://www.instagram.com/reel/CZHBM5hFqR8/embed')">
+                    <div class="short-play"><svg width="16" height="16" viewBox="0 0 24 24" fill="black"><path d="M8 5v14l11-7z"/></svg></div>
+                    <div class="card-info">
+                        <p>Cissi och Selma</p>
+                        <h3>Creative Shoe Transition</h3>
+                    </div>
+                </div>
+
+                <!-- Signfulness 1 (Stranden) -->
+                <div class="short-card" style="background-image: url('https://unsplash.com/photos/person-in-blue-shorts-sitting-on-beach-shore-during-daytime-n8L1VYaypcw');" onclick="openVideo('https://www.instagram.com/tv/Cbmd38eFRnQ/embed')">
+                    <div class="short-play"><svg width="16" height="16" viewBox="0 0 24 24" fill="black"><path d="M8 5v14l11-7z"/></svg></div>
+                    <div class="card-info">
+                        <p>Signfulness</p>
+                        <h3>Idag sa min kropp stopp</h3>
+                    </div>
+                </div>
+
+                <!-- Signfulness 2 (Händerna uppe) -->
+                <div class="short-card" style="background-image: url('https://images.unsplash.com/photo-1517457373958-b7bdd4587205?q=80&w=600&auto=format&fit=crop');" onclick="openVideo('https://www.instagram.com/reel/CdSz9TJlSBe/embed')">
+                    <div class="short-play"><svg width="16" height="16" viewBox="0 0 24 24" fill="black"><path d="M8 5v14l11-7z"/></svg></div>
+                    <div class="card-info">
+                        <p>Signfulness</p>
+                        <h3>Du förtjänar</h3>
+                    </div>
+                </div>
+
+                <!-- Signfulness 3 (Kvinna vid klippa) -->
+                <div class="short-card" style="background-image: url('https://images.unsplash.com/photo-1518241353330-0f7941c2d9b5?q=80&w=600&auto=format&fit=crop');" onclick="openVideo('https://www.instagram.com/reel/Ce-5XANFIU6/embed')">
+                    <div class="short-play"><svg width="16" height="16" viewBox="0 0 24 24" fill="black"><path d="M8 5v14l11-7z"/></svg></div>
+                    <div class="card-info">
+                        <p>Signfulness</p>
+                        <h3>Möt ditt livs största kärlek</h3>
+                    </div>
+                </div>
+
+                <!-- Signfulness 4 (Person vid vatten) -->
+                <div class="short-card" style="background-image: url('https://images.unsplash.com/photo-1470246973918-29a93221c455?q=80&w=600&auto=format&fit=crop');" onclick="openVideo('https://www.instagram.com/reel/CeP_iAHlAXa/embed')">
+                    <div class="short-play"><svg width="16" height="16" viewBox="0 0 24 24" fill="black"><path d="M8 5v14l11-7z"/></svg></div>
+                    <div class="card-info">
+                        <p>Signfulness</p>
+                        <h3>Ha en bra dag</h3>
+                    </div>
+                </div>
+
+            </div>
+
+            <button class="nav-btn next-btn" onclick="scrollCarousel('shortCarousel', 280)">›</button>
+        </div>
+    </section>
+
+    <div class="video-modal" id="videoModal" onclick="closeVideo()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <button class="close-modal" onclick="closeVideo()">Stäng ✕</button>
+            <iframe id="modalIframe" src="" allow="autoplay"></iframe>
+        </div>
+    </div>
+
+    <script>
+        // Hantera glidande rörelse via knapparna
+        function scrollCarousel(id, distance) {
+            const container = document.getElementById(id);
+            container.scrollBy({ left: distance, behavior: 'smooth' });
+        }
+
+        // Lägg till mus-skrollstöd i sidled för desktop
+        document.querySelectorAll('.carousel-container').forEach(carousel => {
+            carousel.addEventListener('wheel', (evt) => {
+                evt.preventDefault();
+                carousel.scrollLeft += evt.deltaY * 1.3;
+            });
+        });
+
+        // Kontroller för popup-fönstret (Instagram)
+        const modal = document.getElementById('videoModal');
+        const iframe = document.getElementById('modalIframe');
+
+        function openVideo(embedUrl) {
+            iframe.src = embedUrl;
+            modal.classList.add('active');
+        }
+
+        function closeVideo() {
+            modal.classList.remove('active');
+            iframe.src = '';
+        }
+    </script>
+</body>
+</html>
